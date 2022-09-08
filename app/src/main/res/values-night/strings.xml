@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="full_name">Fulll name</string>
+    <string name="full_name_hint">Nguyen Van A</string>
+    <string name="phone_number">Phone</string>
+    <string name="phone_hint">0384735254</string>
+    <string name="login">LOGIN</string>
+</resources>
