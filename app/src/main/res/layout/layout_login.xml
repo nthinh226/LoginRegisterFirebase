@@ -38,6 +38,7 @@
             android:id="@+id/textInputPassword"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            app:passwordToggleEnabled="true"
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
 
             android:layout_marginTop="@dimen/loginViewsMargin">
