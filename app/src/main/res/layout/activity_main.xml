@@ -1,51 +1,72 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    tools:context=".MainActivity">
+    android:background="@color/background"
+    tools:context=".MainActivity"
+    >
 
-    <com.google.android.material.textfield.TextInputLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-        android:layout_marginTop="@dimen/loginViewsMargin">
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/txtSoThuNhat"
-            style="@style/modifiedEditText"
-            android:inputType="number"
-            android:maxLines="1"
-            android:hint="So thu hai"/>
-    </com.google.android.material.textfield.TextInputLayout>
-
-    <com.google.android.material.textfield.TextInputLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-
-        android:layout_marginTop="@dimen/loginViewsMargin">
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/txtSoThuHai"
-            style="@style/modifiedEditText"
-            android:hint="So thu hai"
-            android:maxLines="1"
-            android:inputType="number"/>
-    </com.google.android.material.textfield.TextInputLayout>
     <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="abc"
-        android:id="@+id/txtKetQua"/>
-
-    <Button
+        android:id="@+id/txtApp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Tính tổng"
-        android:layout_gravity="center"
-        android:id="@+id/btnTinhTong"/>
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="100dp"
+        android:layout_marginRight="10dp"
+        android:text="GIẢI PHÁP NHẬN DIỆN KHUÔN MẶT BẰNG CAMERA"
+        android:textAlignment="center"
+        android:textColor="@color/white"
+        android:textSize="28dp"
+        android:textStyle="bold" />
 
+    <Button
+        android:id="@+id/btnInfor"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_below="@+id/txtApp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginTop="100dp"
+        android:layout_marginRight="20dp"
+        android:background="@drawable/bg_button"
+        android:text="Thông tin"
+        android:textColor="@color/white"
+        android:textSize="20dp" />
 
+    <Button
+        android:id="@+id/btnTrainingFace"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_below="@+id/btnInfor"
+        android:layout_marginLeft="20dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginRight="20dp"
+        android:background="@drawable/bg_button"
+        android:text="Training face"
+        android:textColor="@color/white"
+        android:textSize="20dp" />
 
-</LinearLayout>
+    <Button
+        android:id="@+id/btnLogout"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_below="@+id/btnTrainingFace"
+        android:layout_marginLeft="20dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginRight="20dp"
+        android:background="@drawable/bg_button"
+        android:text="logout"
+        android:textColor="@color/white"
+        android:textSize="20dp" />
+    <!-- add ImageView to display the captured image -->
+    <ImageView
+        android:id="@+id/click_image"
+        android:layout_width="200dp"
+        android:layout_below="@id/btnLogout"
+        android:layout_height="200dp"
+        android:layout_centerHorizontal="true"
+        android:layout_marginLeft="15dp"
+        android:layout_marginBottom="-304dp" />
+
+</RelativeLayout>

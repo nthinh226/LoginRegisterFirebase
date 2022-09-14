@@ -19,4 +19,9 @@
 
     <!--colros for card-->
     <color name="whiteCardColor">#fff</color>
+
+    <color name="background">#182E3F</color>
+    <color name="bg_btn">#FE5150</color>
+    <color name="lableTTCN">#9C7036</color>
+    <color name="contentTTCN">#E63535</color>
 </resources>
