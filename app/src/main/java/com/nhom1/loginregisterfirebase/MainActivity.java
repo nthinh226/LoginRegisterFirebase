@@ -71,22 +71,23 @@ public class MainActivity extends AppCompatActivity {
         btnTrainingFace.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.CAMERA)
-                        == PackageManager.PERMISSION_DENIED) {
-                    ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.CAMERA}, MY_CAMERA_REQUEST_CODE);
-                } else {
-                    Toast.makeText(MainActivity.this, "Open Camera", Toast.LENGTH_SHORT).show();
-
-                    Intent camera_intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-//                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
-//                        camera_intent.putExtra("android.intent.extras.CAMERA_FACING", android.hardware.Camera.CameraInfo.CAMERA_FACING_FRONT);
-//                        camera_intent.putExtra("android.intent.extras.LENS_FACING_FRONT", 1);
-//                        camera_intent.putExtra("android.intent.extras.USE_FRONT_CAMERA", true);
-//                    } else {
-//                        camera_intent.putExtra("android.intent.extras.CAMERA_FACING", 1);
-//                    }
-                    startActivityForResult(camera_intent, pic_id);
-                }
+                startActivity(new Intent(MainActivity.this, FaceTraningActivity.class));
+//                if (ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.CAMERA)
+//                        == PackageManager.PERMISSION_DENIED) {
+//                    ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.CAMERA}, MY_CAMERA_REQUEST_CODE);
+//                } else {
+//                    Toast.makeText(MainActivity.this, "Open Camera", Toast.LENGTH_SHORT).show();
+//
+//                    Intent camera_intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+////                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
+////                        camera_intent.putExtra("android.intent.extras.CAMERA_FACING", android.hardware.Camera.CameraInfo.CAMERA_FACING_FRONT);
+////                        camera_intent.putExtra("android.intent.extras.LENS_FACING_FRONT", 1);
+////                        camera_intent.putExtra("android.intent.extras.USE_FRONT_CAMERA", true);
+////                    } else {
+////                        camera_intent.putExtra("android.intent.extras.CAMERA_FACING", 1);
+////                    }
+//                    startActivityForResult(camera_intent, pic_id);
+//                }
 
             }
         });
