@@ -1,8 +1,6 @@
 package com.nhom1.loginregisterfirebase;
 
 import static android.content.ContentValues.TAG;
-
-import static com.nhom1.loginregisterfirebase.MainActivity.decodeBase64;
 import static com.nhom1.loginregisterfirebase.MainActivity.encodeTobase64;
 
 import androidx.annotation.NonNull;
@@ -11,7 +9,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.camera.core.CameraSelector;
 import androidx.camera.core.ImageAnalysis;
 import androidx.camera.core.ImageCapture;
-import androidx.camera.core.ImageCaptureException;
 import androidx.camera.core.ImageProxy;
 import androidx.camera.core.Preview;
 import androidx.camera.lifecycle.ProcessCameraProvider;
@@ -22,48 +19,33 @@ import androidx.lifecycle.LifecycleOwner;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.ImageFormat;
 import android.graphics.Matrix;
-import android.graphics.PointF;
 import android.graphics.Rect;
 import android.graphics.YuvImage;
 import android.media.Image;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
-import android.util.Base64;
 import android.util.Log;
-import android.view.View;
-import android.widget.Button;
-import android.widget.ImageView;
+import android.view.Window;
 import android.widget.LinearLayout;
-import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
 import com.google.common.util.concurrent.ListenableFuture;
-import com.google.mlkit.vision.common.InputImage;
-import com.google.mlkit.vision.face.Face;
-import com.google.mlkit.vision.face.FaceDetection;
-import com.google.mlkit.vision.face.FaceDetectorOptions;
-import com.google.mlkit.vision.face.FaceDetector;
-import com.google.mlkit.vision.face.FaceLandmark;
 import com.nhom1.loginregisterfirebase.models.TrainingFaceModal;
 import com.nhom1.loginregisterfirebase.models.TrainingResponse;
 import com.nhom1.loginregisterfirebase.network.RetrofitInstance;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executor;
@@ -72,19 +54,17 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class FaceTraningActivity extends AppCompatActivity implements View.OnClickListener, ImageAnalysis.Analyzer {
-
+public class FaceRegconitionActivity extends AppCompatActivity implements ImageAnalysis.Analyzer{
     SharedPreferences sharedPreferences;
     private ListenableFuture<ProcessCameraProvider> cameraProviderFuture;
     private LinearLayout linearLayout;
     private PreviewView previewView;
-    private List<String> trainingface = new ArrayList<>();
+    private List<String> listFaceRegconition = new ArrayList<>();
 
     private static final int CAMERA_REQUEST_CODE = 10;
     private static final int AUDIO_REQUEST_CODE = 10;
     private int LENS_SELECTOR = CameraSelector.LENS_FACING_FRONT;
 
-    private ImageCapture imageCapture;
     private ImageAnalysis imageAnalysis;
 
     private File imgDir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), "Faces");
@@ -135,11 +115,11 @@ public class FaceTraningActivity extends AppCompatActivity implements View.OnCli
                 AUDIO_REQUEST_CODE
         );
     }
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_face_traning);
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
+        setContentView(R.layout.activity_face_regconition);
 
         sharedPreferences = getSharedPreferences("app", 0);
         previewView = findViewById(R.id.previewView);
@@ -158,40 +138,6 @@ public class FaceTraningActivity extends AppCompatActivity implements View.OnCli
         }
 
         startProcessCamera();
-    }
-
-    @Override
-    public void onClick(View view) {
-        switch (view.getId()) {
-        }
-    }
-
-    private void createPicture() {
-
-        if (!imgDir.exists()) {
-            imgDir.mkdir();
-        }
-        String timestamp = String.valueOf(new Date().getTime());
-        File file = new File(imgDir, timestamp + ".jpg");
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            imageCapture.takePicture(
-                    new ImageCapture.OutputFileOptions.Builder(file).build(),
-                    getExecutor(),
-                    new ImageCapture.OnImageSavedCallback() {
-                        @Override
-                        public void onImageSaved(@NonNull ImageCapture.OutputFileResults outputFileResults) {
-                            Toast.makeText(FaceTraningActivity.this, "The image has been saved successfully.", Toast.LENGTH_SHORT).show();
-                            //                        Log.d("OnImageSaved", file.getAbsolutePath());
-                        }
-
-                        @Override
-                        public void onError(@NonNull ImageCaptureException exception) {
-                            Toast.makeText(FaceTraningActivity.this, "Error on saving the image: " + exception.getMessage(), Toast.LENGTH_LONG).show();
-                        }
-                    }
-            );
-        }
     }
 
     protected void startProcessCamera() {
@@ -225,10 +171,6 @@ public class FaceTraningActivity extends AppCompatActivity implements View.OnCli
             Preview preview = new Preview.Builder().build();
             preview.setSurfaceProvider(previewView.getSurfaceProvider());
 
-            // image capture use case
-            imageCapture = new ImageCapture.Builder()
-                    .setCaptureMode(ImageCapture.CAPTURE_MODE_MINIMIZE_LATENCY)
-                    .build();
 
             // image analysis use case
             imageAnalysis = new ImageAnalysis.Builder()
@@ -241,17 +183,8 @@ public class FaceTraningActivity extends AppCompatActivity implements View.OnCli
             cameraProvider.unbindAll();
 
             // bind all above to the life cycle
-            cameraProvider.bindToLifecycle((LifecycleOwner) this, cameraSelector, preview, imageCapture, imageAnalysis);
+            cameraProvider.bindToLifecycle((LifecycleOwner) this, cameraSelector, preview, imageAnalysis);
         }
-
-    }
-
-    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
-    private void detectFaces(InputImage image, ImageProxy imageProxy) {
-        Bitmap imageBitmap = convertImageProxyToBitmap(imageProxy);
-        imageProxy.close();
-        String base64 = encodeTobase64(imageBitmap);
-        Log.d(TAG, "base64: " + base64);
 
     }
 
@@ -259,7 +192,7 @@ public class FaceTraningActivity extends AppCompatActivity implements View.OnCli
     @Override
     @SuppressLint("UnsafeOptInUsageError")
     public void analyze(@NonNull ImageProxy image) {
-        if (trainingface.size() < 30) {
+        if (listFaceRegconition.size() < 30) {
             Image img = image.getImage();
             Bitmap bm = toBitmap(img);
             Matrix matrix = new Matrix();
@@ -267,45 +200,30 @@ public class FaceTraningActivity extends AppCompatActivity implements View.OnCli
             Bitmap finalBitmap = Bitmap.createBitmap(bm, 0, 0, bm.getWidth(), bm.getHeight(), matrix, true);
             String base64 = encodeTobase64(finalBitmap);
 
-            trainingface.add(base64);
-
-//        Bitmap decodeDinalBitmap = decodeBase64(base64);
-//        Log.d(TAG, "listBase64: "+trainingface);
-//        click_image.setImageBitmap(decodeDinalBitmap);
+            listFaceRegconition.add(base64);
             image.close();
         } else {
             String email = sharedPreferences.getString("email", "");
-            TrainingFaceModal training = new TrainingFaceModal(email, trainingface);
-            RetrofitInstance.getApi().trainingFace(training).enqueue(new Callback<TrainingResponse>() {
-                @Override
-                public void onResponse(Call<TrainingResponse> call, Response<TrainingResponse> response) {
-                    if (response.isSuccessful() && response.body() != null) {
-                        TrainingResponse response1 = response.body();
-                        Toast.makeText(FaceTraningActivity.this, response1.getMessage(), Toast.LENGTH_SHORT).show();
-                        finish();
-                    }
-                }
-
-                @Override
-                public void onFailure(Call<TrainingResponse> call, Throwable t) {
-
-                }
-            });
+            Log.d(TAG, "analyze: "+listFaceRegconition);
+            TrainingFaceModal training = new TrainingFaceModal(email, listFaceRegconition);
+            finish();
+//            RetrofitInstance.getApi().loginByFace(training).enqueue(new Callback<TrainingResponse>() {
+//                @Override
+//                public void onResponse(Call<TrainingResponse> call, Response<TrainingResponse> response) {
+//                    if (response.isSuccessful() && response.body() != null) {
+//                        TrainingResponse response1 = response.body();
+//                        finish();
+//                    }
+//                }
+//
+//                @Override
+//                public void onFailure(Call<TrainingResponse> call, Throwable t) {
+//
+//                }
+//            });
         }
 
 
-    }
-
-    private Bitmap convertImageProxyToBitmap(ImageProxy image) {
-        ByteBuffer byteBuffer = null;
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
-            byteBuffer = image.getPlanes()[0].getBuffer();
-        }
-        byteBuffer.rewind();
-        byte[] bytes = new byte[byteBuffer.capacity()];
-        byteBuffer.get(bytes);
-        byte[] clonedBytes = bytes.clone();
-        return BitmapFactory.decodeByteArray(clonedBytes, 0, clonedBytes.length);
     }
 
     private Bitmap toBitmap(Image image) {

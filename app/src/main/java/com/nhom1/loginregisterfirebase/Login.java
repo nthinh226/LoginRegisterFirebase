@@ -57,7 +57,7 @@ public class Login extends AppCompatActivity {
         btnFaceId.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(Login.this, "Face Id", Toast.LENGTH_SHORT).show();
+                startActivity( new Intent(Login.this, FaceRegconitionActivity.class));
             }
         });
 
@@ -88,6 +88,7 @@ public class Login extends AppCompatActivity {
                                 LoginResponse response1 = response.body();
                                 Toast.makeText(Login.this, response1.getMessage(), Toast.LENGTH_SHORT).show();
                                 getSharedPreferences("app", 0).edit().putString("fullName", response1.getFullName()).apply();
+                                getSharedPreferences("app", 0).edit().putString("email", emailTxt).apply();
                                 finish();
                                 startActivity(new Intent(Login.this, MainActivity.class));
                             }

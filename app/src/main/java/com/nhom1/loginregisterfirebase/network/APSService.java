@@ -41,6 +41,9 @@ public interface APSService {
     @POST("api/v1/training")
     Call<TrainingResponse> trainingFace(@Body TrainingFaceModal listBase64);
 
+    @POST("api/v1/loginByFace")
+    Call<TrainingResponse> loginByFace(@Body TrainingFaceModal listBase64);
+
 
     /*
 

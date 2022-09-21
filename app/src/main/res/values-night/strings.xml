@@ -5,4 +5,5 @@
     <string name="phone_number">Phone</string>
     <string name="phone_hint">0384735254</string>
     <string name="login">LOGIN</string>
+    <string name="notice">Vui lòng chọn ảnh chỉ có mình bạn và đủ sáng</string>
 </resources>
