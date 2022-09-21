@@ -26,6 +26,7 @@ import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.ImageFormat;
+import android.graphics.Matrix;
 import android.graphics.PointF;
 import android.graphics.Rect;
 import android.graphics.YuvImage;
@@ -52,21 +53,30 @@ import com.google.mlkit.vision.face.FaceDetection;
 import com.google.mlkit.vision.face.FaceDetectorOptions;
 import com.google.mlkit.vision.face.FaceDetector;
 import com.google.mlkit.vision.face.FaceLandmark;
+import com.nhom1.loginregisterfirebase.models.TrainingFaceModal;
+import com.nhom1.loginregisterfirebase.models.TrainingResponse;
+import com.nhom1.loginregisterfirebase.network.RetrofitInstance;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executor;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class FaceTraningActivity extends AppCompatActivity implements View.OnClickListener, ImageAnalysis.Analyzer{
     Button btnTakePicture;
     private ListenableFuture<ProcessCameraProvider> cameraProviderFuture;
     private LinearLayout linearLayout;
     private PreviewView previewView;
+    private List<String> trainingface = new ArrayList<>();
 
     private static final int CAMERA_REQUEST_CODE = 10;
     private static final int AUDIO_REQUEST_CODE = 10;
@@ -244,23 +254,40 @@ public class FaceTraningActivity extends AppCompatActivity implements View.OnCli
     @Override
     @SuppressLint("UnsafeOptInUsageError")
     public void analyze(@NonNull ImageProxy image) {
-//        Image mediaImage = imageProxy.getImage();
-//        if (mediaImage != null) {
-//            InputImage image = InputImage.fromMediaImage(mediaImage, imageProxy.getImageInfo().getRotationDegrees());
-//            // Pass image to an ML Kit Vision API
-//            detectFaces(image, imageProxy);
-//        }
-//        ByteBuffer imageBuffer = image.getPlanes()[0].getBuffer();
-//        StringBuilder sb = new StringBuilder();
-//        sb.append("format:" + image.getFormat()).append("\n")
-//                .append(image.getWidth() + " x " + image.getHeight()).append("\n\n");
+        if(trainingface.size()<30){
         Image img = image.getImage();
         Bitmap bm = toBitmap(img);
-        String base64 = encodeTobase64(bm);
-        Bitmap dbm = decodeBase64(base64);
-        Log.d(TAG, "analyze: "+base64);
-        click_image.setImageBitmap(dbm);
+        Matrix matrix = new Matrix();
+        matrix.postRotate(-90);
+        Bitmap finalBitmap = Bitmap.createBitmap(bm,0,0,bm.getWidth(),bm.getHeight(),matrix,true);
+        String base64 = encodeTobase64(finalBitmap);
+
+        trainingface.add(base64);
+
+//        Bitmap decodeDinalBitmap = decodeBase64(base64);
+//        Log.d(TAG, "listBase64: "+trainingface);
+//        click_image.setImageBitmap(decodeDinalBitmap);
         image.close();
+        } else {
+            TrainingFaceModal training =new TrainingFaceModal(trainingface);
+            RetrofitInstance.getApi().trainingFace(training).enqueue(new Callback<TrainingResponse>() {
+                @Override
+                public void onResponse(Call<TrainingResponse> call, Response<TrainingResponse> response) {
+                    if(response.isSuccessful() && response.body()!=null){
+                        TrainingResponse response1 = response.body();
+                        Toast.makeText(FaceTraningActivity.this, response1.getMessage(), Toast.LENGTH_SHORT).show();
+                        finish();
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<TrainingResponse> call, Throwable t) {
+
+                }
+            });
+        }
+
+
     }
 
     private Bitmap convertImageProxyToBitmap(ImageProxy image) {

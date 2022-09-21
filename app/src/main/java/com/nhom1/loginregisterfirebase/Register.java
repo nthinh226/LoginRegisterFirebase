@@ -23,6 +23,13 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.nhom1.loginregisterfirebase.models.RegisterModal;
+import com.nhom1.loginregisterfirebase.models.RegisterResponse;
+import com.nhom1.loginregisterfirebase.network.RetrofitInstance;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class Register extends AppCompatActivity {
     // create object of DatabaseReference class to access firebase's Realime Database
@@ -93,32 +100,22 @@ public class Register extends AppCompatActivity {
 
 
                 } else {
-                    databaseReference.child("users").addListenerForSingleValueEvent(new ValueEventListener() {
+                    RegisterModal user = new RegisterModal(fullnameTxt, emailTxt, phoneTxt, passwordTxt);
+                    RetrofitInstance.getApi().registerUser(user).enqueue(new Callback<RegisterResponse>() {
                         @Override
-                        public void onDataChange(@NonNull DataSnapshot snapshot) {
-                            // check if phone is not registered before
-                            if (snapshot.hasChild(phoneTxt)) {
-                                Toast.makeText(Register.this, "Phone is already registered", Toast.LENGTH_SHORT).show();
-                            } else {
-                                // sending data to firebase realtime db
-                                // we are using phone number as unique identity of every user
-                                // so all the other details of user comes under phone number
-                                databaseReference.child("users").child(phoneTxt).child("fullname").setValue(fullnameTxt);
-                                databaseReference.child("users").child(phoneTxt).child("email").setValue(EncodeString(emailTxt));
-                                databaseReference.child("users").child(phoneTxt).child("password").setValue(passwordTxt);
-
-                                // show a success msg then finish the activity
-                                Toast.makeText(Register.this, "User registered successfully", Toast.LENGTH_SHORT).show();
-                                finish();
+                        public void onResponse(Call<RegisterResponse> call, Response<RegisterResponse> response) {
+                            if(response.isSuccessful() && response.body()!=null){
+                                RegisterResponse response1 = response.body();
+                                Toast.makeText(Register.this, response1.getMessage(), Toast.LENGTH_SHORT).show();
+                                startActivity(new Intent(Register.this, Login.class));
                             }
                         }
 
                         @Override
-                        public void onCancelled(@NonNull DatabaseError error) {
+                        public void onFailure(Call<RegisterResponse> call, Throwable t) {
 
                         }
                     });
-
 
                 }
 

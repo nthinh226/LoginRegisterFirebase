@@ -1,11 +1,20 @@
 package com.nhom1.loginregisterfirebase.network;
 
 
+import com.nhom1.loginregisterfirebase.models.LoginModal;
+import com.nhom1.loginregisterfirebase.models.LoginResponse;
 import com.nhom1.loginregisterfirebase.models.Post;
+import com.nhom1.loginregisterfirebase.models.RegisterModal;
+import com.nhom1.loginregisterfirebase.models.RegisterResponse;
 import com.nhom1.loginregisterfirebase.models.Response;
+import com.nhom1.loginregisterfirebase.models.TrainingFaceModal;
+import com.nhom1.loginregisterfirebase.models.TrainingResponse;
+
+import java.util.List;
 
 import okhttp3.MultipartBody;
 import retrofit2.Call;
+import retrofit2.http.Body;
 import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
@@ -22,6 +31,17 @@ public interface APSService {
     Call<Response> getResult(
             @Field("sothunhat") int sothunhat,
             @Field("sothuhai") int sothuhai);
+
+    @POST("api/v1/register")
+    Call<RegisterResponse> registerUser(@Body RegisterModal registerModal);
+
+    @POST("api/v1/loginByAccount")
+    Call<LoginResponse> login(@Body LoginModal loginModal);
+
+    @POST("api/v1/training")
+    Call<TrainingResponse> trainingFace(@Body TrainingFaceModal listBase64);
+
+
     /*
 
     @FormUrlEncoded
