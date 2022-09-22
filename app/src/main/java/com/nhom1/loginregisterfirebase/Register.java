@@ -100,7 +100,7 @@ public class Register extends AppCompatActivity {
 
 
                 } else {
-                    RegisterModal user = new RegisterModal(fullnameTxt, emailTxt, phoneTxt, passwordTxt);
+                    RegisterModal user = new RegisterModal(fullnameTxt, phoneTxt, emailTxt, passwordTxt);
                     RetrofitInstance.getApi().registerUser(user).enqueue(new Callback<RegisterResponse>() {
                         @Override
                         public void onResponse(Call<RegisterResponse> call, Response<RegisterResponse> response) {
