@@ -9,6 +9,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -30,8 +31,12 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.nhom1.loginregisterfirebase.models.FaceRegconitionModal;
+import com.nhom1.loginregisterfirebase.models.FaceRegconitionResponse;
 import com.nhom1.loginregisterfirebase.models.LoginModal;
 import com.nhom1.loginregisterfirebase.models.LoginResponse;
+import com.nhom1.loginregisterfirebase.models.TrainingFaceModal;
+import com.nhom1.loginregisterfirebase.models.TrainingResponse;
 import com.nhom1.loginregisterfirebase.network.RetrofitInstance;
 
 import retrofit2.Call;
@@ -43,7 +48,7 @@ public class Login extends AppCompatActivity {
 
     private static final int CAMERA_REQUEST = 1888;
     private static final int MY_CAMERA_PERMISSION_CODE = 100;
-
+    SharedPreferences sharedPreferences;
     EditText signInEmailTextInput;
     EditText passwordTextInput;
     Button signInButton, btnFaceId;
@@ -58,7 +63,7 @@ public class Login extends AppCompatActivity {
             getSupportActionBar().hide();
         }
 
-        SharedPreferences preferences = getSharedPreferences("app", 0);
+        sharedPreferences = getSharedPreferences("app", 0);
         signInEmailTextInput = findViewById(R.id.signInEmailTextInput);
         passwordTextInput = findViewById(R.id.signInPasswordTextInput);
         signInButton = findViewById(R.id.signInButton);
@@ -106,7 +111,7 @@ public class Login extends AppCompatActivity {
                     RetrofitInstance.getApi().login(user).enqueue(new Callback<LoginResponse>() {
                         @Override
                         public void onResponse(Call<LoginResponse> call, Response<LoginResponse> response) {
-                            if(response.isSuccessful() && response.body()!=null){
+                            if (response.isSuccessful() && response.body() != null) {
                                 LoginResponse response1 = response.body();
                                 Toast.makeText(Login.this, response1.getMessage(), Toast.LENGTH_SHORT).show();
                                 getSharedPreferences("app", 0).edit().putString("fullName", response1.getFullName()).apply();
@@ -136,20 +141,16 @@ public class Login extends AppCompatActivity {
         });
 
     }
+
     @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults)
-    {
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode == MY_CAMERA_PERMISSION_CODE)
-        {
-            if (grantResults[0] == PackageManager.PERMISSION_GRANTED)
-            {
+        if (requestCode == MY_CAMERA_PERMISSION_CODE) {
+            if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 Toast.makeText(this, "camera permission granted", Toast.LENGTH_LONG).show();
                 Intent cameraIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
                 startActivityForResult(cameraIntent, CAMERA_REQUEST);
-            }
-            else
-            {
+            } else {
                 Toast.makeText(this, "camera permission denied", Toast.LENGTH_LONG).show();
             }
         }
@@ -161,8 +162,40 @@ public class Login extends AppCompatActivity {
         if (requestCode == CAMERA_REQUEST && resultCode == Activity.RESULT_OK) {
             Bitmap photo = (Bitmap) data.getExtras().get("data");
             String base64 = encodeTobase64(photo);
+            Log.d(TAG, "base64 img: " + base64);
+            String email = sharedPreferences.getString("email", "");
+            email = "b@gmail.com";
+            FaceRegconitionModal faceRegconitionModal = new FaceRegconitionModal(email, base64);
+            ProgressDialog progress = new ProgressDialog(this);
+            progress.setTitle("Loading");
+            progress.setMessage("Wait while loading...");
+            progress.setCancelable(false); // disable dismiss by tapping outside of the dialog
+            progress.show();
 
-            Log.d(TAG, "base64 img: "+base64);
+            RetrofitInstance.getApi().loginByFace(faceRegconitionModal).enqueue(new Callback<FaceRegconitionResponse>() {
+                @Override
+                public void onResponse(Call<FaceRegconitionResponse> call, Response<FaceRegconitionResponse> response) {
+                    if (response.isSuccessful() && response.body() != null) {
+                        FaceRegconitionResponse response1 = response.body();
+                        Toast.makeText(Login.this, response1.getMessage(), Toast.LENGTH_SHORT).show();
+                        if(Float.parseFloat(response1.getScore()) >=90){
+                            // To dismiss the dialog
+                            progress.dismiss();
+                            startActivity(new Intent(Login.this, MainActivity.class));
+                        } else {
+                            // To dismiss the dialog
+                            progress.dismiss();
+                        }
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<FaceRegconitionResponse> call, Throwable t) {
+                    // To dismiss the dialog
+                    progress.dismiss();
+                    Log.d(TAG, "onResponse: " + t);
+                }
+            });
         }
     }
 }

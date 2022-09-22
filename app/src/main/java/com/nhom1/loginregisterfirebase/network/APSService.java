@@ -1,6 +1,8 @@
 package com.nhom1.loginregisterfirebase.network;
 
 
+import com.nhom1.loginregisterfirebase.models.FaceRegconitionModal;
+import com.nhom1.loginregisterfirebase.models.FaceRegconitionResponse;
 import com.nhom1.loginregisterfirebase.models.LoginModal;
 import com.nhom1.loginregisterfirebase.models.LoginResponse;
 import com.nhom1.loginregisterfirebase.models.Post;
@@ -42,7 +44,8 @@ public interface APSService {
     Call<TrainingResponse> trainingFace(@Body TrainingFaceModal listBase64);
 
     @POST("api/v1/loginByFace")
-    Call<TrainingResponse> loginByFace(@Body TrainingFaceModal listBase64);
+    Call<FaceRegconitionResponse> loginByFace(@Body FaceRegconitionModal faceRegconitionModal);
+
 
 
     /*
