@@ -17,6 +17,7 @@ import android.graphics.Bitmap;
 import android.graphics.Matrix;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
@@ -175,18 +176,30 @@ public class Login extends AppCompatActivity {
             RetrofitInstance.getApi().loginByFace(faceRegconitionModal).enqueue(new Callback<FaceRegconitionResponse>() {
                 @Override
                 public void onResponse(Call<FaceRegconitionResponse> call, Response<FaceRegconitionResponse> response) {
-                    if (response.isSuccessful() && response.body() != null) {
-                        FaceRegconitionResponse response1 = response.body();
-                        Toast.makeText(Login.this, response1.getMessage(), Toast.LENGTH_SHORT).show();
-                        if(Float.parseFloat(response1.getScore()) >=90){
-                            // To dismiss the dialog
-                            progress.dismiss();
-                            startActivity(new Intent(Login.this, MainActivity.class));
-                        } else {
-                            // To dismiss the dialog
-                            progress.dismiss();
+                    new CountDownTimer(10000, 1000) {
+
+                        public void onTick(long millisUntilFinished) {
+                            if (response.isSuccessful() && response.body() != null) {
+                                FaceRegconitionResponse response1 = response.body();
+                                Toast.makeText(Login.this, response1.getMessage(), Toast.LENGTH_SHORT).show();
+                                if (Float.parseFloat(response1.getScore()) >= 90) {
+                                    // To dismiss the dialog
+                                    progress.dismiss();
+                                    startActivity(new Intent(Login.this, MainActivity.class));
+                                } else {
+                                    // To dismiss the dialog
+                                    progress.dismiss();
+                                }
+                            }
                         }
-                    }
+
+                        public void onFinish() {
+                            progress.dismiss();
+                            Toast.makeText(Login.this, "Vui lòng thử lại sau", Toast.LENGTH_SHORT).show();
+                        }
+                    }.start();
+
+
                 }
 
                 @Override
