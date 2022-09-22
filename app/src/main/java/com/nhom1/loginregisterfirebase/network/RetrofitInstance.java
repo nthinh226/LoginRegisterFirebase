@@ -6,7 +6,7 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 public class RetrofitInstance {
-    public static final String BASE_URL = "https://a22f-118-71-221-92.ap.ngrok.io/";
+    public static final String BASE_URL = "https://01c7-118-71-221-92.ap.ngrok.io/";
     //https://a22f-118-71-221-92.ap.ngrok.io/api/v1/register
     private static final HttpLoggingInterceptor loggingInterceptor =
             new HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY);
