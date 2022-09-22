@@ -179,18 +179,6 @@ public class Login extends AppCompatActivity {
                     new CountDownTimer(10000, 1000) {
 
                         public void onTick(long millisUntilFinished) {
-                            if (response.isSuccessful() && response.body() != null) {
-                                FaceRegconitionResponse response1 = response.body();
-                                Toast.makeText(Login.this, response1.getMessage(), Toast.LENGTH_SHORT).show();
-                                if (Float.parseFloat(response1.getScore()) >= 90) {
-                                    // To dismiss the dialog
-                                    progress.dismiss();
-                                    startActivity(new Intent(Login.this, MainActivity.class));
-                                } else {
-                                    // To dismiss the dialog
-                                    progress.dismiss();
-                                }
-                            }
                         }
 
                         public void onFinish() {
@@ -198,7 +186,19 @@ public class Login extends AppCompatActivity {
                             Toast.makeText(Login.this, "Vui lòng thử lại sau", Toast.LENGTH_SHORT).show();
                         }
                     }.start();
-
+                    
+                    if (response.isSuccessful() && response.body() != null) {
+                        FaceRegconitionResponse response1 = response.body();
+                        Toast.makeText(Login.this, response1.getMessage(), Toast.LENGTH_SHORT).show();
+                        if (Float.parseFloat(response1.getScore()) >= 90) {
+                            // To dismiss the dialog
+                            progress.dismiss();
+                            startActivity(new Intent(Login.this, MainActivity.class));
+                        } else {
+                            // To dismiss the dialog
+                            progress.dismiss();
+                        }
+                    }
 
                 }
 
